@@ -43,9 +43,9 @@ namespace EpitmenyAdo.Models
             {
                 switch (adosav)
                 {
-                    case "A": return 800 * hazAlapterulet;
-                    case "B": return 600 * hazAlapterulet;
-                    case "C": return 100 * hazAlapterulet;
+                    case "A": return 800 * hazAlapterulet > 10000 ? 800 * hazAlapterulet : 0;
+                    case "B": return 600 * hazAlapterulet > 10000 ? 600 * hazAlapterulet : 0;
+                    case "C": return 100 * hazAlapterulet >= 10000 ? 100 * hazAlapterulet : 0;
                     default: return 0;
                 }
             }

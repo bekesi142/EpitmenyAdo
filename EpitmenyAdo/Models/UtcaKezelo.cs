@@ -51,22 +51,44 @@ namespace EpitmenyAdo.Models
             int B_TelkekSzama = utcak.Where(x => x.Adosav == "B").Count();
             int C_TelkekSzama = utcak.Where(x => x.Adosav == "C").Count();
 
-            int A_AlapteruletTeljes = utcak.Where(x => x.Adosav == "A").Select(x=> x.HazAlapterulet).ToList().Sum();
-            int B_AlapteruletTeljes = utcak.Where(x => x.Adosav == "B").Select(x => x.HazAlapterulet).ToList().Sum();
-            int C_AlapteruletTeljes = utcak.Where(x => x.Adosav == "C").Select(x => x.HazAlapterulet).ToList().Sum();
+            int A_TeljesAdo = utcak.Where(x => x.Adosav == "A").Select(x => x.FizetendoOsszeg).Sum();
+            int B_TeljesAdo = utcak.Where(x => x.Adosav == "B").Select(x => x.FizetendoOsszeg).Sum();
+            int C_TeljesAdo = utcak.Where(x => x.Adosav == "C").Select(x => x.FizetendoOsszeg).Sum();
 
 
-            return $"Az A sávba {A_TelkekSzama} telek esik, az adó {Ado("A", A_AlapteruletTeljes)} Ft. \n" +
-                $"A B sávba {B_TelkekSzama} telek esik, az adó {Ado("B", B_AlapteruletTeljes)} Ft. \n" +
-                $"A C sávba {C_TelkekSzama} telek esik, az adó {Ado("C", C_AlapteruletTeljes)} Ft.";
+            return $"Az A sávba {A_TelkekSzama} telek esik, az adó {A_TeljesAdo} Ft. \n" +
+                $"A B sávba {B_TelkekSzama} telek esik, az adó {B_TeljesAdo} Ft. \n" +
+                $"A C sávba {C_TelkekSzama} telek esik, az adó {C_TeljesAdo} Ft.";
             
         }
 
         public List<string> TobbsavbaSoroltUtcak()
         {
-
+            return utcak.GroupBy(x => x.UtcaNeve).Where(x => x.GroupBy(y => y.Adosav).Count() > 1).Select(x=> x.Key).ToList();
+            //return utcak.GroupBy(x => x.UtcaNeve).DistinctBy(x => x.Adosav);
         }
 
+        public string LegtobbHazatTartalmazoUtca()
+        {
+            return utcak.GroupBy(x => x.UtcaNeve).OrderByDescending(x => x.Count()).First().Key;
+        }
+
+        public List<string> Utcak_HazSzama()
+        {
+            return utcak.GroupBy(x => x.UtcaNeve).Select(x => $"{x.Key} utca házainak száma: {x.Count()}").ToList();
+        }
+
+
+        /*
+        7. Határozza meg a fizetendő adót tulajdonosonként! A tulajdonos adószámát és a fizetendő
+        összeget írassa ki a mintának megfelelően a fizetendo.txt állományba! A fájlban
+        minden tulajdonos adatai új sorban szerepeljenek, a tulajdonos adószámát egy szóközzel
+        elválasztva kövesse az általa fizetendő adó teljes összege.
+         */
+        public List<string> FizetendoAdo_Tulajonkent()
+        {
+            return utcak.GroupBy(x => x.TulajdonosAdoszama).Select(x => $"{x.Key} Tulajdonos fizetendő adója összesen: {x.Sum(y => y.FizetendoOsszeg)}").ToList(); 
+        }
 
     }
 }
